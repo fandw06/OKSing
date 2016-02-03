@@ -66,7 +66,7 @@ public class OKSPanel extends JPanel{
 		String bk = "http://ok.okchang.com/home-10800746.html";
 		String zhuo = "http://ok.okchang.com/home-10511316.html";
 		String zishu = "http://ok.okchang.com/home-10362725.html";
-		person = new Person(zishu);	
+		person = new Person(zhuo);	
 		System.out.println(person.toString());
 		
 		initializeGUI();
@@ -160,8 +160,15 @@ public class OKSPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (bListSongs.isSelected()) {
-					ListSongs listSongs = new ListSongs();
-					listSongs.execute();
+					if (Integer.parseInt(person.numOfSongs) == 0)
+						JOptionPane.showMessageDialog(null, 
+								"No songs to list.",
+								"Info",
+								JOptionPane.INFORMATION_MESSAGE);	
+					else {
+						ListSongs listSongs = new ListSongs();
+						listSongs.execute();
+					}
 					
 				}
 
@@ -299,20 +306,33 @@ public class OKSPanel extends JPanel{
 			
 			lSongs.setText("Listing...");
 			JPanel display = new JPanel();
-			display.setPreferredSize(new Dimension(400, Integer.parseInt(person.numOfSongs)*30));
+			display.setPreferredSize(new Dimension(400, Integer.parseInt(person.numOfSongs)*30+30));
 	//		display.setMaximumSize(new Dimension(500, Integer.parseInt(person.numOfSongs)*40));
-			display.setLayout(new GridLayout(Integer.parseInt(person.numOfSongs), 1));
+			display.setLayout(new GridLayout(Integer.parseInt(person.numOfSongs)+1, 1));
 			display.setLocation(10, 180);
 			songList = person.listSongs();
 			cb = new JCheckBox[Integer.parseInt(person.numOfSongs)];
 
+			// Add a lable row.
+			
+			JPanel labelRow = new JPanel(new GridLayout(1, 3));
+			labelRow.setSize(310, 28);
+			labelRow.setLocation(5, 0);
+			labelRow.setVisible(true);
+			labelRow.add(new JLabel("Title"));
+			labelRow.add(new JLabel("Times"));
+			labelRow.add(new JLabel("Upload Time"));
+			display.add(labelRow);
+			
+		//	display.add(new JLabel("     Titile                                            Times                                                 Date"));
+		//	display.add(new JLabel("Titile                                  Times                                       Date"));	
 			for (int i = 0; i< songList.size(); i++) {
 				Song song = songList.get(i);
 				System.out.println(song.toString());
 				
 				JPanel row = new JPanel(new GridLayout(1, 3));
-				row.setSize(330, 30);
-				row.setLocation(0, 0);
+				row.setSize(310, 28);
+				row.setLocation(5, 0);
 				row.setVisible(true);
 				
 				cb[i] = new JCheckBox(song.title+"   ");
@@ -323,14 +343,16 @@ public class OKSPanel extends JPanel{
 			}	
 			
 			JScrollPane spSongsList = new JScrollPane(display);
-			spSongsList.setSize(565, 300);
+			int height = (Integer.parseInt(person.numOfSongs) < 10)? Integer.parseInt(person.numOfSongs)*30+30: 330;
+			spSongsList.setSize(527, height);
+		//	spSongsList.setSize(565, Integer.parseInt(person.numOfSongs)*30);
 			spSongsList.setLocation(10, 180);
 			spSongsList.setVisible(true);
 			spSongsList.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			OKSPanel.this.add(spSongsList);
 			spSongsList.validate();
 			display.validate();
-			//OKSPanel.this.validate();
+			//OKSPanel.this.validate(); 
 			bListSongs.setEnabled(false);
 			return null;
 		}

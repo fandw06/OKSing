@@ -21,10 +21,11 @@ public class OKSMain {
 		
 		JFrame window = new JFrame("OK Sing");
 		OKSPanel panel = new OKSPanel(window);
-		window.setSize(new Dimension(600, 550));
+		window.setSize(new Dimension(600, 580));
 		window.setLocation(500, 100);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
+		window.setResizable(false);
 		window.add(panel);
 	}
 
