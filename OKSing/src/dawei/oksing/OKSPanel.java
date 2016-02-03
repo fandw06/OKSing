@@ -43,6 +43,16 @@ public class OKSPanel extends JPanel{
 	private JLabel lSongs;
 	private JLabel lNumber;	
 	private JProgressBar pbProgress;
+	private class DlInfo {
+		boolean completed;
+		int number;
+		int progress;
+		DlInfo (boolean c, int n, int p) {
+			this.completed = c;
+			this.number = n;
+			this.progress = p;
+		}
+	}
 	
 	/**
 	 * Create the panel.
@@ -56,7 +66,7 @@ public class OKSPanel extends JPanel{
 		String bk = "http://ok.okchang.com/home-10800746.html";
 		String zhuo = "http://ok.okchang.com/home-10511316.html";
 		String zishu = "http://ok.okchang.com/home-10362725.html";
-		person = new Person(zhuo);	
+		person = new Person(bk);	
 		System.out.println(person.toString());
 		
 		initializeGUI();
@@ -186,20 +196,20 @@ public class OKSPanel extends JPanel{
 		pbProgress = new JProgressBar(0, 100);
 	    pbProgress.setValue(0);
 	    pbProgress.setStringPainted(true);
-	    pbProgress.setSize(160, 25);
+	    pbProgress.setPreferredSize(new Dimension(160, 25));
 	    pbProgress.setLocation(380, 136);
 	    add(pbProgress);
 	}
 
-	private class Download extends SwingWorker<Void, int[]> {
+	private class Download extends SwingWorker<Void, DlInfo> {
 
 		@Override
 		protected Void doInBackground() throws Exception {
+			
 			bDownload.setText("Downloading");
 			bDownload.setEnabled(false);
-			for (int i = 0; i< cb.length; i++) {
+			for (int i = 0; i< cb.length; i++)
 				cb[i].setEnabled(false);
-			}
 			
 			for (int i = 0; i< cb.length; i++) {
 				if (cb[i].isSelected()) {
@@ -212,8 +222,6 @@ public class OKSPanel extends JPanel{
 						ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 						FileOutputStream fos = new FileOutputStream(song.title+".m4a");
 						int bufferSize = 60000;
-					//	fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-						
 						ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 						int bytesRead = rbc.read(buffer);
 						int loop = 0;
@@ -221,29 +229,31 @@ public class OKSPanel extends JPanel{
 						while(bytesRead != -1 ) {
 							
 							buffer.flip();
-							//		System.out.println("After Flip: Position: "+buf.position()+ " limit: "+buf.limit());
 							while(buffer.hasRemaining())
 								fos.write(buffer.get());
 							loop++;
 							if (loop % 10 == 0) {
-								int percent = (int)((double)10240*100*loop/(double)fileSize<100? (double)10240*100*loop/(double)fileSize:100);
-								publish(new int[]{i+1, percent});
-								System.out.println("Progress "+ bufferSize*loop);
-								System.out.format("progress: %2.2f%%\n", (double)10240*100*loop/(double)fileSize<100? (double)10240*100*loop/(double)fileSize:100);
+								long currentSize = fos.getChannel().size();
+								int percent = (int) ((double)currentSize/(double)fileSize*100);
+								publish(new DlInfo(false, i+1, percent));
+								System.out.println("Progress "+ currentSize);
+								System.out.format("progress: %2.2f%%\n", (double)currentSize/(double)fileSize*100);
 							}
 							
 							buffer.clear();
 						    bytesRead = rbc.read(buffer);
 						}
-						System.out.println("Downloaded: "+ loop*bufferSize);
+						System.out.println("Downloaded: "+ fos.getChannel().size());
+						if (fileSize == fos.getChannel().size())
+							publish(new DlInfo(true, i+1, 100));
+						else 
+							publish(new DlInfo(true, i+1, 0));
 						fos.close();
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 				}
 			}
-			
-			
 			return null;
 		}
 		
@@ -258,11 +268,26 @@ public class OKSPanel extends JPanel{
 		}
 		
 		@Override
-		protected void process(List<int[]> p) {
-			int current = p.get(p.size()-1)[0];
-			int percent = p.get(p.size()-1)[1];
+		protected void process(List<DlInfo> p) {
+			boolean comp = p.get(p.size()-1).completed;
+			int current = p.get(p.size()-1).number;
+			int percent = p.get(p.size()-1).progress;
+			
+			lNumber.setText(Integer.toString(current));
 			pbProgress.setValue(percent);
 			lNumber.setText(Integer.toString(current));
+
+			/**
+			 * If the file is incomplete, display an error message.
+			 */
+			if (comp && (percent == 0)) {
+				this.cancel(true);
+				JOptionPane.showMessageDialog(null, 
+						"Download failed due to the network, please retry downloading songs from current song.",
+						"Warning",
+						JOptionPane.WARNING_MESSAGE);
+				
+			}
 		}
 		
 	}
@@ -274,7 +299,7 @@ public class OKSPanel extends JPanel{
 			
 			lSongs.setText("Listing...");
 			JPanel display = new JPanel();
-			display.setSize(200, Integer.parseInt(person.numOfSongs)*30);
+			display.setPreferredSize(new Dimension(200, Integer.parseInt(person.numOfSongs)*30));
 			display.setLayout(new GridLayout(Integer.parseInt(person.numOfSongs), 1));
 			display.setLocation(10, 180);
 			songList = person.listSongs();
