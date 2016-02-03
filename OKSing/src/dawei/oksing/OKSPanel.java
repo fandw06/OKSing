@@ -66,7 +66,7 @@ public class OKSPanel extends JPanel{
 		String bk = "http://ok.okchang.com/home-10800746.html";
 		String zhuo = "http://ok.okchang.com/home-10511316.html";
 		String zishu = "http://ok.okchang.com/home-10362725.html";
-		person = new Person(bk);	
+		person = new Person(zishu);	
 		System.out.println(person.toString());
 		
 		initializeGUI();
@@ -299,7 +299,8 @@ public class OKSPanel extends JPanel{
 			
 			lSongs.setText("Listing...");
 			JPanel display = new JPanel();
-			display.setPreferredSize(new Dimension(200, Integer.parseInt(person.numOfSongs)*30));
+			display.setPreferredSize(new Dimension(400, Integer.parseInt(person.numOfSongs)*30));
+	//		display.setMaximumSize(new Dimension(500, Integer.parseInt(person.numOfSongs)*40));
 			display.setLayout(new GridLayout(Integer.parseInt(person.numOfSongs), 1));
 			display.setLocation(10, 180);
 			songList = person.listSongs();
