@@ -47,6 +47,14 @@ public class Crawler {
         return result;   
     }  
   
+    /**
+     * This function match a regex in content, return first nums groups.
+     * 
+     * @param content
+     * @param regex
+     * @param nums
+     * @return
+     */
     static String[] searchPattern(String content, String regex, int nums) {
     	if (content == null)
     		return null;
@@ -61,6 +69,11 @@ public class Crawler {
 		return null; 
     }
     
+    /**
+     * Get the file size from a url, eg, a m4a file.
+     * @param url
+     * @return
+     */
     static int getFileSize(URL url) {
     	HttpURLConnection conn = null;
 	    try {
