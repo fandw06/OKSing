@@ -20,13 +20,15 @@ public class OKSMain {
 	private static void createAndShowGUI() {
 		
 		JFrame window = new JFrame("OK Sing");
-		OKSPanel panel = new OKSPanel(window);
+		OKSGUI gui = new OKSGUI();
 		window.setSize(new Dimension(600, 580));
 		window.setLocation(500, 100);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		window.setResizable(false);
-		window.add(panel);
+		
+		window.add(gui.getOKSPanel());
+		window.setJMenuBar(gui.getOKSMenubar());
 	}
 
 }

@@ -31,23 +31,20 @@ import javax.swing.SwingWorker;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 
-public class OKSPanel extends JPanel{
+public class OKSGUI{
 
-	private static final long serialVersionUID = -620586205401566309L;
-	private Person person;
-	private List<Song> songList;
 	/**
-	String bk = "http://ok.okchang.com/home-10800746.html";
-	String zhuo = "http://ok.okchang.com/home-10511316.html";
-	String zishu = "http://ok.okchang.com/home-10362725.html";
-	*/
-	private final String DEFAULT_PAGE = "http://ok.okchang.com/home-10800746.html";
-	private String page;
+	 * The top-level panel to add into the frame.
+	 */
+	private JPanel OKSPanel;
+	/**
+	 * The menu bar to add into the frame.
+	 */
+	private JMenuBar OKSMenubar;
 	
-	private JFrame window;
-	private JMenuItem miChange;
-	
-	// Components of profile display
+	/*
+	 * GUI components for panel. 
+	 */
 	private JLabel lPhoto;
 	private JLabel lName;
 	private JLabel lFollow;
@@ -57,9 +54,29 @@ public class OKSPanel extends JPanel{
 	private JLabel lSongs;
 	private JLabel lNumber;	
 	private JProgressBar pbProgress;
-	
 	private JPanel container;
 	
+	/*
+	 * GUI components for menu. 
+	 */
+	private JMenu mFile;
+	private JMenuItem miChange;
+	private JMenuItem miQuit;
+	private JMenu mHelp;
+	private JMenuItem miAbout;
+	
+	/*
+	 * Non-GUI data members.
+	 */
+	private Person person;
+	private List<Song> songList;
+	/**
+	String bk = "http://ok.okchang.com/home-10800746.html";
+	String zhuo = "http://ok.okchang.com/home-10511316.html";
+	String zishu = "http://ok.okchang.com/home-10362725.html";
+	*/
+	private final String DEFAULT_PAGE = "http://ok.okchang.com/home-10800746.html";
+	private String page;
 	private class DlInfo {
 		boolean completed;
 		int number;
@@ -74,152 +91,84 @@ public class OKSPanel extends JPanel{
 	/**
 	 * Create the panel.
 	 */
-	public OKSPanel(JFrame window) {
-		
-		this.setLayout(null);
-		this.setSize(600, 550);
-		this.setLocation(0, 0);
-		this.window = window;
-		
-		initializeGUI();
+	public OKSGUI() {		
+		initializePanel();
+		initializeMenu();
 		displayPage(DEFAULT_PAGE);
 	}
 	
 	/**
 	 * This is for initializing components which are irrelevant with person.
 	 */
-	public void initializeGUI() {
+	public void initializePanel() {
 		
-		// Initialize menu
-		JMenu mFile; 
-		JMenu mHelp; 
-		JMenuItem miQuit; 
-		JMenuItem miAbout; 
-		JMenuBar mBar = new JMenuBar(); 
-		mBar.setOpaque(true);
+		OKSPanel = new JPanel();
+		OKSPanel.setLayout(null);
+		OKSPanel.setSize(600, 550);
+		OKSPanel.setLocation(0, 0);
 
-		mFile = new JMenu("File"); 
-		mFile.setMnemonic(KeyEvent.VK_F); 
-		miChange = new JMenuItem("Change person");
-		miChange.setMnemonic(KeyEvent.VK_Q); 
-		miChange.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				page = JOptionPane.showInputDialog(null,  
-						"The homepage : ",
-						"Input a person's homepage",
-		                JOptionPane.OK_CANCEL_OPTION);	
-				displayPage(page);
-			}
-			
-		});
-		mFile.add(miChange); 
-		miQuit = new JMenuItem("Quit"); 
-		miQuit.setMnemonic(KeyEvent.VK_Q); 
-		miQuit.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);				
-			}
-			
-		});
-		mFile.add(miQuit); 
-
-		mHelp = new JMenu("Help"); 
-		mHelp.setMnemonic(KeyEvent.VK_H); 
-		miAbout = new JMenuItem("About");	
-		miAbout.setMnemonic(KeyEvent.VK_A);
-		miAbout.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, 
-						"OK Sing v1.0\n"+ "Date: 02/03/2016\n"+ "Author: Dawei Fan",
-						"About",
-						JOptionPane.INFORMATION_MESSAGE);			
-			}
-			
-		});
-		mHelp.add(miAbout);
-		mBar.add(mFile); 
-		mBar.add(mHelp); 
-		window.setJMenuBar(mBar); 
-		
 		lPhoto = new JLabel();
 		lPhoto.setSize(new Dimension(160, 160));
 		lPhoto.setLocation(10, 10);
 		lPhoto.setVisible(true);
-		add(lPhoto);
+		OKSPanel.add(lPhoto);
 		
 		lName = new JLabel();
 		lName.setFont(new Font("Serif", Font.PLAIN, 35));
 		lName.setLocation(180, 15);
 		lName.setSize(160, 40);
-		add(lName);
+		OKSPanel.add(lName);
 		
 		lFollow = new JLabel();
 		lFollow.setFont(new Font("Serif", Font.PLAIN, 25));
 		lFollow.setLocation(180, 65);
 		lFollow.setSize(420, 28);
-		add(lFollow);
+		OKSPanel.add(lFollow);
 		
 		lSongs = new JLabel();
 		lSongs.setFont(new Font("Serif", Font.PLAIN, 25));
 		lSongs.setLocation(180, 100);
 		lSongs.setSize(150, 28);
-		add(lSongs);
+		OKSPanel.add(lSongs);
 		
 		bListSongs = new JCheckBox();
 		bListSongs.setFont(new Font("Serif", Font.PLAIN, 25));
 		bListSongs.setLocation(340, 100);
 		bListSongs.setSize(150, 28);
-		bListSongs.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (bListSongs.isSelected()) {
-					if (Integer.parseInt(person.numOfSongs) == 0)
-						JOptionPane.showMessageDialog(null, 
-								"No songs to list.",
-								"Info",
-								JOptionPane.INFORMATION_MESSAGE);	
-					else {
-						ListSongs listSongs = new ListSongs();
-						listSongs.execute();
-					}
-					
+		bListSongs.addActionListener( e -> {
+			if (bListSongs.isSelected()) {
+				if (Integer.parseInt(person.numOfSongs) == 0)
+					JOptionPane.showMessageDialog(null, 
+							"No songs to list.",
+							"Info",
+							JOptionPane.INFORMATION_MESSAGE);	
+				else {
+					ListSongs listSongs = new ListSongs();
+					listSongs.execute();
 				}
-
 				
-			}
-			
+			}					
 		});
-		add(bListSongs);
+		OKSPanel.add(bListSongs);
 		
 		bDownload = new JButton();
 		bDownload.setFont(new Font("Serif", Font.PLAIN, 20));
 		bDownload.setLocation(180, 135);
 		bDownload.setSize(150, 28);
 		bDownload.setEnabled(false);
-		bDownload.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Download download = new Download();
-				download.execute();		
-			}
+		bDownload.addActionListener( e -> {
+			Download download = new Download();
+			download.execute();	
 			
 		});
-		add(bDownload);
+		OKSPanel.add(bDownload);
 		
 		lNumber = new JLabel();
 		lNumber.setFont(new Font("Serif", Font.PLAIN, 22));
 		lNumber.setLocation(345, 127);
 		lNumber.setSize(40, 40);
 		lNumber.setVisible(false);
-		add(lNumber);
+		OKSPanel.add(lNumber);
 		
 		pbProgress = new JProgressBar(0, 100);
 	    pbProgress.setValue(0);
@@ -227,15 +176,64 @@ public class OKSPanel extends JPanel{
 	    pbProgress.setSize(new Dimension(160, 25));
 	    pbProgress.setLocation(380, 136);
 	    pbProgress.setVisible(false);
-	    add(pbProgress);
+	    OKSPanel.add(pbProgress);
 	    
 	    container = new JPanel(null);
 	    container.setSize(570, 350);
 	    container.setLocation(10, 180);
 	    container.setVisible(true);
-	    add(container);
+	    OKSPanel.add(container);
 	}
 
+	public void initializeMenu() {
+		
+		OKSMenubar = new JMenuBar(); 
+		OKSMenubar.setOpaque(true);
+		/*
+		 * Initialize menu and menu items.
+		 */
+		/**
+		 * mFile menu includes "Change person" and "Quit".
+		 */
+		mFile = new JMenu("File"); 
+		mFile.setMnemonic(KeyEvent.VK_F); 
+	
+		miChange = new JMenuItem("Change person");
+		miChange.setMnemonic(KeyEvent.VK_Q); 
+		miChange.addActionListener( e -> {
+			page = JOptionPane.showInputDialog(null,  
+					"The homepage : ",
+					"Input a person's homepage",
+				    JOptionPane.OK_CANCEL_OPTION);	
+			displayPage(page);					
+		});
+		mFile.add(miChange); 
+		
+		miQuit = new JMenuItem("Quit"); 
+		miQuit.setMnemonic(KeyEvent.VK_Q); 
+		miQuit.addActionListener( e -> {
+			System.exit(0);
+		});
+		mFile.add(miQuit); 
+
+		OKSMenubar.add(mFile);
+		
+		mHelp = new JMenu("Help"); 
+		mHelp.setMnemonic(KeyEvent.VK_H); 
+		
+		miAbout = new JMenuItem("About");	
+		miAbout.setMnemonic(KeyEvent.VK_A);
+		miAbout.addActionListener( e -> {
+			JOptionPane.showMessageDialog(null, 
+					"OK Sing v1.0\n"+ "Date: 02/03/2016\n"+ "Author: Dawei Fan",
+					"About",
+					JOptionPane.INFORMATION_MESSAGE);				
+		});
+		mHelp.add(miAbout);
+		
+		OKSMenubar.add(mHelp); 	
+	}
+	
 	public void displayPage(String page) {
 		
 		URL url;
@@ -265,8 +263,8 @@ public class OKSPanel extends JPanel{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
-		ImageIcon image = new ImageIcon(c.getScaledInstance(160, 160,  java.awt.Image.SCALE_SMOOTH));
-		lPhoto.setIcon(image);	
+
+		lPhoto.setIcon(new ImageIcon(c.getScaledInstance(160, 160,  java.awt.Image.SCALE_SMOOTH)));	
 		lName.setText(person.name);	
 		lFollow.setText("Followers " + person.numOfFans +"    Following: "+ person.numOfFriends);
 		lSongs.setText("Songs: "+ person.numOfSongs);
@@ -275,12 +273,22 @@ public class OKSPanel extends JPanel{
 		lNumber.setText("No.");
 		bListSongs.setEnabled(true);
 		bListSongs.setSelected(false);
+		pbProgress.setValue(0);
+		pbProgress.setVisible(false);
 		
 		container.removeAll();
 		container.validate();		
 		container.repaint();
 	}
 	
+	public JPanel getOKSPanel() {
+		return OKSPanel;
+	}
+
+	public JMenuBar getOKSMenubar() {
+		return OKSMenubar;
+	}
+
 	private class Download extends SwingWorker<Void, DlInfo> {
 
 		@Override
@@ -308,7 +316,8 @@ public class OKSPanel extends JPanel{
 						ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 						int bytesRead = rbc.read(buffer);
 						int loop = 0;
-						
+						int percent = 0;
+						long currentSize = 0;
 						while(bytesRead != -1 ) {
 							
 							buffer.flip();
@@ -316,8 +325,8 @@ public class OKSPanel extends JPanel{
 								fos.write(buffer.get());
 							loop++;
 							if (loop % 10 == 0) {
-								long currentSize = fos.getChannel().size();
-								int percent = (int) ((double)currentSize/(double)fileSize*100);
+								currentSize = fos.getChannel().size();
+								percent = (int) ((double)currentSize/(double)fileSize*100);
 								publish(new DlInfo(false, i+1, percent));
 							}
 							
