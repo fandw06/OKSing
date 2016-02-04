@@ -332,6 +332,10 @@ public class OKSPanel extends JPanel{
 				cb[i].setSelected(false);
 				cb[i].setEnabled(true);
 			}
+			JOptionPane.showMessageDialog(null, 
+					"Downloaded successfully!" ,
+					"Done",
+					JOptionPane.INFORMATION_MESSAGE);	
 		}
 		
 		@Override
