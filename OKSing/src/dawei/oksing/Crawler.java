@@ -32,6 +32,7 @@ public class Crawler {
             
         } catch (Exception e) {  
             System.err.println("Cannot get source: " + e);  
+            result = "error!";
             e.printStackTrace();  
         }  
  

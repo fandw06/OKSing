@@ -60,7 +60,6 @@ public class OKSPanel extends JPanel{
 	
 	private JPanel container;
 	
-	
 	private class DlInfo {
 		boolean completed;
 		int number;
@@ -241,6 +240,22 @@ public class OKSPanel extends JPanel{
 		
 		URL url;
 		person = new Person(page);	
+		if (person.errMsg == Person.ERR_MSG.INVALID) {
+			JOptionPane.showMessageDialog(null, 
+					"Invalid URL!" ,
+					"Warning",
+					JOptionPane.WARNING_MESSAGE);	
+			return;
+		}
+		
+		if (person.errMsg == Person.ERR_MSG.NOT_FOUND) {
+			JOptionPane.showMessageDialog(null, 
+					"Person not found!" ,
+					"Warning",
+					JOptionPane.WARNING_MESSAGE);	
+			return;
+		}
+		
 		System.out.println(person.toString());
 		
 		BufferedImage c = null;

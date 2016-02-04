@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Person {
+	public ERR_MSG errMsg;
+	public enum ERR_MSG {INVALID, NOT_FOUND, FOUND};
 	public String address; 
 	public String name;
 	public String photoAddress;
@@ -13,14 +15,27 @@ public class Person {
 	public List<Song> listOfSongs;
 	
 	public Person(String addr) {
+		
 		this.address = addr;
-		String content = Crawler.getSource(address);
-		this.name = Crawler.searchPattern(content, "<meta name=\"description\" content=\"(.+?)\" />", 1)[0];
-		this.photoAddress = Crawler.searchPattern(content, "<img src=\"(http.+?)\".+?/>", 1)[0];
-		this.numOfFans = Crawler.searchPattern(content, "<li class=\"la2\">粉丝:<span id=\"fans_box\">(.+?)</span></li>", 1)[0];
-		this.numOfFriends = Crawler.searchPattern(content, "<li class=\"la3\">关注:<span>(.+?)</span></li>", 1)[0];
-		this.numOfSongs = Crawler.searchPattern(content, "<li class=\"la1\">作品:<span>(.+?)</span></li>", 1)[0];
-		listOfSongs = new ArrayList<Song>();
+		if (!address.matches("http://ok.okchang.com/home-[0-9]{8}.html"))
+			errMsg = ERR_MSG.INVALID;
+		else {
+			String content = Crawler.getSource(address);
+			if (content.contains("<meta name=\"keywords\" content=\"404\" />"))
+				errMsg = ERR_MSG.NOT_FOUND;
+			else {
+				errMsg = ERR_MSG.FOUND;
+				this.name = Crawler.searchPattern(content, "<meta name=\"description\" content=\"(.+?)\" />", 1)[0];
+				this.photoAddress = Crawler.searchPattern(content, "<img src=\"(http.+?)\".+?/>", 1)[0];
+				this.numOfFans = Crawler.searchPattern(content, "<li class=\"la2\">粉丝:<span id=\"fans_box\">(.+?)</span></li>", 1)[0];
+				this.numOfFriends = Crawler.searchPattern(content, "<li class=\"la3\">关注:<span>(.+?)</span></li>", 1)[0];
+				this.numOfSongs = Crawler.searchPattern(content, "<li class=\"la1\">作品:<span>(.+?)</span></li>", 1)[0];
+				listOfSongs = new ArrayList<Song>();
+			}
+		}
+		
+		
+		
 	}
 	
 	public List<Song> listSongs() {
