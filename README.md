@@ -4,4 +4,4 @@
 ![alt tag](https://github.com/fandw06/OKSing/blob/master/snapshot2.png)
 ![alt tag](https://github.com/fandw06/OKSing/blob/master/snapshot.png)
 
-<p> This application is no long working after 04/29/2016 because "Hangchang" changed their website, and don't provide public user profiles. See OKSing-new to download a song list.
+<p> This application is no long working after 04/29/2016 because "Hangchang" changed their website, and don't provide public user profiles. See [OKSing-new](ttps://github.com/fandw06/OKSing-new) to download a song list.
